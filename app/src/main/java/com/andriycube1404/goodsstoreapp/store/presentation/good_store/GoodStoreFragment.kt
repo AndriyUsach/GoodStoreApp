@@ -1,6 +1,8 @@
 package com.andriycube1404.goodsstoreapp.store.presentation.good_store
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +15,6 @@ import com.andriycube1404.goodsstoreapp.R
 import com.andriycube1404.goodsstoreapp.databinding.FragmentGoodStoreBinding
 import com.andriycube1404.goodsstoreapp.store.presentation.good_store.adapters.Element
 import com.andriycube1404.goodsstoreapp.store.presentation.good_store.adapters.GoodStoreAdapter
-import com.andriycube1404.goodsstoreapp.store.presentation.good_store.adapters.Item
 import com.andriycube1404.goodsstoreapp.store.presentation.good_store.adapters.elements.GoodOneElement
 import com.andriycube1404.goodsstoreapp.store.presentation.good_store.adapters.elements.GoodTwoElement
 import com.andriycube1404.goodsstoreapp.store.presentation.good_store.adapters.elements.TitleElement
@@ -28,7 +29,6 @@ class GoodStoreFragment : Fragment() {
 
     lateinit var adapter: GoodStoreAdapter
     lateinit var mLayoutManager: GridLayoutManager
-    lateinit var goodList: List<Item>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,6 +66,26 @@ class GoodStoreFragment : Fragment() {
                 }
             }
         }
+
+        binding.searchInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                return
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                return
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+                val search = p0.toString()
+                if (search.isEmpty()) {
+                    viewModel.refreshGoodList()
+                    return
+                }
+                viewModel.refreshGoodList(p0.toString())
+            }
+        })
+
     }
 
 

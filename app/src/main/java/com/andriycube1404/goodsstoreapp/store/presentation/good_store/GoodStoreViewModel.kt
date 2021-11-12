@@ -3,6 +3,7 @@ package com.andriycube1404.goodsstoreapp.store.presentation.good_store
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andriycube1404.goodsstoreapp.store.domain.enums.Titles
+import com.andriycube1404.goodsstoreapp.store.domain.model.Good
 import com.andriycube1404.goodsstoreapp.store.domain.repository.GoodsStoreRepository
 import com.andriycube1404.goodsstoreapp.store.presentation.good_store.adapters.Item
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,4 +46,28 @@ class GoodStoreViewModel @Inject constructor(
         }
     }
 
+    fun refreshGoodList(search: String? = null) {
+        viewModelScope.launch {
+            repository.getGoods().collectLatest {
+                val items = mutableListOf<Item>()
+                for (series in Titles.values()) {
+                    val seriesGood = it.filter { good ->
+                        good.series.lowercase() == series.title.title.lowercase() &&
+                                filtering(search, good.name)
+                    }
+                    if (seriesGood.isNotEmpty()) {
+                        items.add(series.title)
+                        items.addAll(seriesGood)
+                    }
+                }
+                _goodList.value = items
+            }
+        }
+    }
+
+
+    private fun filtering(search: String?, name: String): Boolean {
+        if (search.isNullOrEmpty()) return true
+        return name.contains(search)
+    }
 }
